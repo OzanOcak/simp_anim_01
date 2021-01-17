@@ -24,19 +24,32 @@ class GlassOfLiquidDemo extends StatefulWidget {
 }
 
 class _GlassOfLiquidState extends State<GlassOfLiquidDemo> {
+  double fullnessRatio = 0.7;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.orange,
-      body: Center(
-        child: Container(
-          //color: Colors.yellow,
-          width: 120,
-          height: 180,
-          child: CustomPaint(
-              painter:
-                  GlassOfLiquid(skew: 0.2, topBottomRatio: 0.7, fullness: 0.9)),
-        ),
+      body: Column(
+        children: [
+          SizedBox(height: 150),
+          Center(
+            child: Container(
+              //color: Colors.yellow,
+              width: 100,
+              height: 180,
+              child: CustomPaint(
+                  painter: GlassOfLiquid(
+                      skew: 0.2, topBottomRatio: 0.7, fullness: fullnessRatio)),
+            ),
+          ),
+          Slider(
+              value: fullnessRatio,
+              onChanged: (newValue) {
+                setState(() {
+                  this.fullnessRatio = newValue;
+                });
+              })
+        ],
       ),
     );
   }
@@ -69,11 +82,11 @@ class GlassOfLiquid extends CustomPainter {
     );
 
     Paint milkColor = Paint()
-      ..color = Colors.white
+      ..color = Color.fromARGB(255, 235, 235, 235)
       ..style = PaintingStyle.fill;
 
     Paint milkTopLiquid = Paint()
-      ..color = Color.fromARGB(255, 253, 253, 253)
+      ..color = Colors.white
       ..style = PaintingStyle.fill;
 
     Rect liquidTop = Rect.lerp(bottom, top, fullness);
@@ -92,12 +105,12 @@ class GlassOfLiquid extends CustomPainter {
       ..arcTo(bottom, 0, pi, true)
       ..lineTo(liquidTop.left, liquidTop.top + liquidTop.height * .5);
 
-    canvas.drawPath(cupPath, glass);
     canvas.drawPath(cupPath, edges);
 
     canvas.drawPath(liquidPath, milkColor);
-    canvas.drawPath(liquidPath, milkTopLiquid);
+    canvas.drawOval(liquidTop, milkTopLiquid);
 
+    canvas.drawPath(cupPath, glass);
     canvas.drawOval(top, edges);
 
     //canvas.drawOval(top, glass);
@@ -105,7 +118,8 @@ class GlassOfLiquid extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
-  }
+  bool shouldRepaint(GlassOfLiquid old) =>
+      old.fullness != fullness ||
+      old.skew != skew ||
+      old.topBottomRatio != topBottomRatio;
 }
