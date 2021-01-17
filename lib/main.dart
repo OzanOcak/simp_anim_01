@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -62,9 +64,20 @@ class GlassOfLiquid extends CustomPainter {
       height: size.width * skew,
       width: size.width * topBottomRatio,
     );
+    Path cupPath = Path()
+      ..moveTo(top.left, top.top + top.height * .5)
+      ..arcTo(top, pi, pi, true)
+      ..lineTo(bottom.right, bottom.top + bottom.height * .5)
+      ..arcTo(bottom, 0, pi, true)
+      ..lineTo(top.left, top.top + top.height * .5);
 
-    canvas.drawOval(top, glass);
-    canvas.drawOval(bottom, glass);
+    canvas.drawPath(cupPath, glass);
+    canvas.drawPath(cupPath, edges);
+
+    canvas.drawOval(top, edges);
+
+    //canvas.drawOval(top, glass);
+    // canvas.drawOval(bottom, glass);
   }
 
   @override
