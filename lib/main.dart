@@ -34,7 +34,8 @@ class _GlassOfLiquidState extends State<GlassOfLiquidDemo> {
           width: 120,
           height: 180,
           child: CustomPaint(
-              painter: GlassOfLiquid(skew: 0.2, topBottomRatio: 0.7)),
+              painter:
+                  GlassOfLiquid(skew: 0.2, topBottomRatio: 0.7, fullness: 0.9)),
         ),
       ),
     );
@@ -44,8 +45,9 @@ class _GlassOfLiquidState extends State<GlassOfLiquidDemo> {
 class GlassOfLiquid extends CustomPainter {
   final double skew;
   final double topBottomRatio;
+  final double fullness;
 
-  GlassOfLiquid({this.topBottomRatio, this.skew});
+  GlassOfLiquid({this.topBottomRatio, this.skew, this.fullness});
   @override
   void paint(Canvas canvas, Size size) {
     Paint glass = Paint()
@@ -55,6 +57,7 @@ class GlassOfLiquid extends CustomPainter {
       ..color = Colors.black
       ..strokeWidth = 3.0
       ..style = PaintingStyle.stroke;
+
     Rect top = Rect.fromLTRB(0, 0, size.width, size.width * skew);
     Rect bottom = Rect.fromCenter(
       center: Offset(
@@ -64,6 +67,17 @@ class GlassOfLiquid extends CustomPainter {
       height: size.width * skew,
       width: size.width * topBottomRatio,
     );
+
+    Paint milkColor = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+
+    Paint milkTopLiquid = Paint()
+      ..color = Color.fromARGB(255, 253, 253, 253)
+      ..style = PaintingStyle.fill;
+
+    Rect liquidTop = Rect.lerp(bottom, top, fullness);
+
     Path cupPath = Path()
       ..moveTo(top.left, top.top + top.height * .5)
       ..arcTo(top, pi, pi, true)
@@ -71,8 +85,18 @@ class GlassOfLiquid extends CustomPainter {
       ..arcTo(bottom, 0, pi, true)
       ..lineTo(top.left, top.top + top.height * .5);
 
+    Path liquidPath = Path()
+      ..moveTo(liquidTop.left, liquidTop.top + liquidTop.height * .5)
+      ..arcTo(liquidTop, pi, pi, true)
+      ..lineTo(bottom.right, bottom.top + bottom.height * .5)
+      ..arcTo(bottom, 0, pi, true)
+      ..lineTo(liquidTop.left, liquidTop.top + liquidTop.height * .5);
+
     canvas.drawPath(cupPath, glass);
     canvas.drawPath(cupPath, edges);
+
+    canvas.drawPath(liquidPath, milkColor);
+    canvas.drawPath(liquidPath, milkTopLiquid);
 
     canvas.drawOval(top, edges);
 
