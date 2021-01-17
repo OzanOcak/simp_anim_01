@@ -28,9 +28,11 @@ class _GlassOfLiquidState extends State<GlassOfLiquidDemo> {
       backgroundColor: Colors.orange,
       body: Center(
         child: Container(
+          //color: Colors.yellow,
           width: 120,
           height: 180,
-          child: CustomPaint(painter: GlassOfLiquid(skew: 0.2)),
+          child: CustomPaint(
+              painter: GlassOfLiquid(skew: 0.2, topBottomRatio: 0.7)),
         ),
       ),
     );
@@ -39,8 +41,9 @@ class _GlassOfLiquidState extends State<GlassOfLiquidDemo> {
 
 class GlassOfLiquid extends CustomPainter {
   final double skew;
+  final double topBottomRatio;
 
-  GlassOfLiquid({this.skew});
+  GlassOfLiquid({this.topBottomRatio, this.skew});
   @override
   void paint(Canvas canvas, Size size) {
     Paint glass = Paint()
@@ -51,8 +54,17 @@ class GlassOfLiquid extends CustomPainter {
       ..strokeWidth = 3.0
       ..style = PaintingStyle.stroke;
     Rect top = Rect.fromLTRB(0, 0, size.width, size.width * skew);
+    Rect bottom = Rect.fromCenter(
+      center: Offset(
+        size.width * 0.5,
+        size.height - size.width * .5 * skew * topBottomRatio,
+      ),
+      height: size.width * skew,
+      width: size.width * topBottomRatio,
+    );
 
     canvas.drawOval(top, glass);
+    canvas.drawOval(bottom, glass);
   }
 
   @override
